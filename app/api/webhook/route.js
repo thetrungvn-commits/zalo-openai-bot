@@ -19,7 +19,7 @@ export async function POST(req) {
 
   if (computed !== signature) {
     console.error("Invalid signature");
-    return new Response("Invalid signature", { status: 401 });
+    return new Response("Invalid signature", { status: 200 });
   }
 
   console.log("📩 Zalo event:", body.event_name);
