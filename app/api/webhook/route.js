@@ -1,6 +1,6 @@
 // app/api/webhook/route.js
 import crypto from "crypto";
-import { callOpenAI } from "@/lib/ai";
+import { callOpenAI } from "@/lib/ai.js";
 
 export async function POST(req) {
   const body = await req.json();
