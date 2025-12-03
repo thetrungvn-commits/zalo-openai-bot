@@ -1,26 +1,37 @@
 // app/api/zalo/refresh/route.js
+
+export const dynamic = "force-dynamic"; // ⚠ BẮT BUỘC để Next.js không prerender
+
 export async function GET() {
-  const appId = process.env.ZALO_APP_ID;
-  const refreshToken = process.env.ZALO_OA_REFRESH;
+  try {
+    const refreshToken = process.env.ZALO_REFRESH_TOKEN;
+    const appId = process.env.ZALO_APP_ID;
+    const appSecret = process.env.ZALO_APP_SECRET;
 
-  if (!appId || !refreshToken) {
-    return new Response(
-      JSON.stringify({ error: "Missing ZALO_APP_ID or ZALO_OA_REFRESH" }),
-      { status: 500 }
-    );
-  }
+    if (!refreshToken) {
+      return new Response("Missing refresh token", { status: 400 });
+    }
 
-  const resp = await fetch("https://oauth.zalo.me/v4/oa/access_token", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({
-      app_id: appId,
+    const params = new URLSearchParams({
       grant_type: "refresh_token",
-      refresh_token: refreshToken
-    })
-  });
+      refresh_token: refreshToken,
+      app_id: appId,
+      app_secret: appSecret
+    });
 
-  const data = await resp.json();
+    const resp = await fetch("https://oauth.zalo.me/v4/oa/access_token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: params.toString()
+    });
 
-  return new Response(JSON.stringify(data), { status: 200 });
+    const data = await resp.json();
+
+    console.log("New Access Token:", data);
+
+    return new Response(JSON.stringify(data), { status: 200 });
+  } catch (err) {
+    console.error("[Refresh Token Error]", err);
+    return new Response("Internal error", { status: 500 });
+  }
 }
