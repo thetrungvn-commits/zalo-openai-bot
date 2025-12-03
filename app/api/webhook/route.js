@@ -49,3 +49,7 @@ export async function POST(req) {
 
   return new Response("OK", { status: 200 });
 }
+// --- Thêm GET handler để tránh 405 khi truy cập bằng trình duyệt ---
+export async function GET() {
+  return new Response("Webhook OK", { status: 200 });
+}
